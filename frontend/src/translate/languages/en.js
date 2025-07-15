@@ -503,7 +503,7 @@ const messages = {
 			schedules: "Schedules",
 			campaigns: "Campaigns",
 			annoucements: "Announcements",
-			logplw:"Updates",
+			loglauncher:"Updates",
 			chats: "Internal Chat",
 			financeiro: "Financial",
 			files: "File list",

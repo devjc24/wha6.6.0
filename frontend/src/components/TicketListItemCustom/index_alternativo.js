@@ -361,7 +361,7 @@ const TicketListItemCustom = ({ ticket }) => {
     setTransferTicketModalOpen(false);
   };
 
-  const handleAcepptTicket = async (id) => {
+  const handleAcceptTicket = async (id) => {
     setLoading(true);
     try {
         await api.put(`/tickets/${id}`, {
@@ -434,7 +434,7 @@ const TicketListItemCustom = ({ ticket }) => {
               <CheckIcon
                 className={classes.actionIcon}
                 style={{ color: green[500] }}
-                onClick={e => handleAcepptTicket(ticket.id)}
+                onClick={e => handleAccepptTicket(ticket.id)}
               />
             </Tooltip>
             <Tooltip title="Recusar">
