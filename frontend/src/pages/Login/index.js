@@ -5,15 +5,16 @@ import { Link as RouterLink } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Divider from "@material-ui/core/Divider";
 
 // Custom Imports
 import api from "../../services/api";
@@ -26,139 +27,342 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: theme.palette.type === 'dark' 
-      ? 'linear-gradient(135deg, #121212 0%, #1e1e1e 100%)' 
-      : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)',
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     position: 'relative',
     overflow: 'hidden',
     '&::before': {
       content: '""',
       position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: '50vh',
-      background: theme.palette.primary.dark, // Usando primary.dark
-      borderBottomLeftRadius: '50% 20%',
-      borderBottomRightRadius: '50% 20%',
-      zIndex: 0,
+      width: '200%',
+      height: '200%',
+      background: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 1px, transparent 1px)',
+      backgroundSize: '50px 50px',
+      top: '-50%',
+      left: '-50%',
+      transform: 'rotate(30deg)',
+      opacity: 0.3,
     }
   },
   loginContainer: {
-    position: 'relative',
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 440,
     margin: theme.spacing(2),
+    position: 'relative',
     zIndex: 1,
   },
-  loginCard: {
-    padding: theme.spacing(4, 3),
-    borderRadius: 16,
-    boxShadow: theme.shadows[4],
-    background: theme.palette.background.paper,
-    textAlign: 'center',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    '&:hover': {
-      transform: 'translateY(-5px)',
-      boxShadow: theme.shadows[6],
-    }
-  },
   logoContainer: {
-    width: 100,
-    height: 100,
-    margin: '0 auto -50px',
-    borderRadius: '50%',
-    background: theme.palette.primary.dark, // Usando primary.dark
-    display: 'flex',
+    textAlign: 'center',
+    marginBottom: theme.spacing(5),
+    animation: '$fadeInDown 0.8s ease-out',
+  },
+  '@keyframes fadeInDown': {
+    from: {
+      opacity: 0,
+      transform: 'translateY(-20px)',
+    },
+    to: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+  },
+  '@keyframes fadeInUp': {
+    from: {
+      opacity: 0,
+      transform: 'translateY(20px)',
+    },
+    to: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+  },
+  logoIcon: {
+    width: 80,
+    height: 80,
+    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+    borderRadius: '20px',
+    display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: theme.shadows[4],
-    border: '4px solid ' + (theme.palette.type === 'dark' ? theme.palette.grey[900] : 'white'),
-    position: 'relative',
-    zIndex: 2,
-    '& img': {
-      width: '70%',
-      height: 'auto',
-      filter: 'brightness(0) invert(1)',
+    marginBottom: theme.spacing(3),
+    boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)',
+    transform: 'rotate(-5deg)',
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+      transform: 'rotate(0deg) scale(1.05)',
+    },
+    '& svg': {
+      width: 40,
+      height: 40,
+      fill: 'white',
     }
   },
+  brandName: {
+    fontSize: '32px',
+    fontWeight: 800,
+    color: '#0f172a',
+    margin: 0,
+    marginBottom: '8px',
+    letterSpacing: '-0.03em',
+    '& span': {
+      background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    }
+  },
+  brandSubtitle: {
+    fontSize: '15px',
+    color: '#64748b',
+    margin: 0,
+    fontWeight: 400,
+    letterSpacing: '0.01em',
+  },
+  loginCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '24px',
+    padding: '48px 40px',
+    boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.04)',
+    textAlign: 'center',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.8)',
+    animation: '$fadeInUp 0.8s ease-out 0.2s both',
+  },
   formTitle: {
-    margin: theme.spacing(5, 0, 3),
-    color: theme.palette.text.primary,
+    fontSize: '28px',
     fontWeight: 700,
+    color: '#0f172a',
+    marginBottom: theme.spacing(1),
+    letterSpacing: '-0.03em',
+  },
+  formSubtitle: {
+    fontSize: '15px',
+    color: '#64748b',
+    marginBottom: theme.spacing(4),
+    fontWeight: 400,
+    '& a': {
+      color: '#22c55e',
+      textDecoration: 'none',
+      fontWeight: 600,
+      transition: 'all 0.2s ease',
+      '&:hover': {
+        color: '#16a34a',
+        textDecoration: 'underline',
+      }
+    }
   },
   form: {
     width: '100%',
-    marginTop: theme.spacing(3),
+  },
+  inputLabel: {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#1e293b',
+    marginBottom: theme.spacing(1),
+    textAlign: 'left',
+    display: 'block',
+    letterSpacing: '0.01em',
   },
   inputField: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
     '& .MuiOutlinedInput-root': {
-      borderRadius: 8,
-      backgroundColor: theme.palette.background.default,
+      borderRadius: '12px',
+      backgroundColor: '#f8fafc',
+      fontSize: '16px',
+      transition: 'all 0.3s ease',
       '& fieldset': {
-        borderColor: theme.palette.divider,
+        borderColor: '#e2e8f0',
+        borderWidth: '1px',
+        transition: 'all 0.3s ease',
       },
-      '&:hover fieldset': {
-        borderColor: theme.palette.primary.light,
+      '&:hover': {
+        backgroundColor: '#f1f5f9',
+        '& fieldset': {
+          borderColor: '#cbd5e1',
+        },
       },
-      '&.Mui-focused fieldset': {
-        borderColor: theme.palette.primary.main,
-        boxShadow: `0 0 0 2px ${theme.palette.primary.light}`,
+      '&.Mui-focused': {
+        backgroundColor: 'white',
+        '& fieldset': {
+          borderColor: '#22c55e',
+          borderWidth: '2px',
+        },
       },
+      '& input': {
+        padding: '16px 18px',
+        fontSize: '15px',
+        fontWeight: 400,
+        letterSpacing: '0.01em',
+      },
+      '& input::placeholder': {
+        color: '#94a3b8',
+        opacity: 1,
+      }
     },
     '& .MuiInputLabel-root': {
-      color: theme.palette.text.secondary,
-      '&.Mui-focused': {
-        color: theme.palette.primary.main,
-      },
+      display: 'none',
     },
   },
-  submitButton: {
-    margin: theme.spacing(3, 0, 2),
-    padding: theme.spacing(1.5),
-    borderRadius: 8,
-    fontWeight: 600,
-    fontSize: '1rem',
-    letterSpacing: 0.5,
-    textTransform: 'none',
-    boxShadow: 'none',
+  passwordToggle: {
+    color: '#94a3b8',
+    '&:hover': {
+      color: '#64748b',
+    }
+  },
+  checkboxContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing(4),
+  },
+  checkboxLabel: {
+    fontSize: '14px',
+    color: '#475569',
+    fontWeight: 400,
+    '& .MuiCheckbox-root': {
+      color: '#cbd5e1',
+      padding: '8px',
+      '&.Mui-checked': {
+        color: '#22c55e',
+      },
+      '& .MuiSvgIcon-root': {
+        fontSize: 20,
+      }
+    }
+  },
+  forgotPassword: {
+    fontSize: '14px',
+    color: '#22c55e',
+    textDecoration: 'none',
+    fontWeight: 500,
     transition: 'all 0.2s ease',
     '&:hover': {
-      transform: 'translateY(-2px)',
-      boxShadow: theme.shadows[4],
+      color: '#16a34a',
+      textDecoration: 'underline',
+    }
+  },
+  submitButton: {
+    width: '100%',
+    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+    color: 'white',
+    padding: '16px',
+    borderRadius: '12px',
+    fontWeight: 600,
+    fontSize: '16px',
+    textTransform: 'none',
+    boxShadow: '0 4px 14px 0 rgba(34, 197, 94, 0.3)',
+    marginBottom: theme.spacing(3),
+    letterSpacing: '0.025em',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+      boxShadow: '0 6px 20px 0 rgba(34, 197, 94, 0.4)',
+      transform: 'translateY(-1px)',
     },
     '&:active': {
       transform: 'translateY(0)',
     },
+    '&:disabled': {
+      background: '#cbd5e1',
+      color: 'white',
+      boxShadow: 'none',
+    }
   },
-  linkText: {
-    color: theme.palette.text.secondary,
+  dividerContainer: {
+    position: 'relative',
+    marginBottom: theme.spacing(3),
+    '& .MuiDivider-root': {
+      backgroundColor: '#e2e8f0',
+    }
+  },
+  dividerText: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: '0 16px',
+    fontSize: '13px',
+    color: '#94a3b8',
+    fontWeight: 400,
+  },
+  socialLogin: {
+    display: 'flex',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+  },
+  socialButton: {
+    flex: 1,
+    padding: '12px',
+    borderRadius: '12px',
+    border: '1px solid #e2e8f0',
+    backgroundColor: '#f8fafc',
+    textTransform: 'none',
     fontWeight: 500,
-    textDecoration: 'none',
-    display: 'inline-block',
-    margin: theme.spacing(1, 0),
-    transition: 'color 0.2s ease',
+    fontSize: '14px',
+    color: '#475569',
+    transition: 'all 0.3s ease',
     '&:hover': {
-      color: theme.palette.primary.main,
-    },
+      backgroundColor: '#f1f5f9',
+      borderColor: '#cbd5e1',
+    }
   },
-  decorativeCircle: {
+  footer: {
+    fontSize: '12px',
+    color: '#94a3b8',
+    lineHeight: '1.6',
+    fontWeight: 400,
+    '& a': {
+      color: '#22c55e',
+      textDecoration: 'none',
+      fontWeight: 500,
+      transition: 'color 0.2s ease',
+      '&:hover': {
+        color: '#16a34a',
+        textDecoration: 'underline',
+      }
+    }
+  },
+  floatingShape: {
     position: 'absolute',
     borderRadius: '50%',
-    background: theme.palette.type === 'dark' 
-      ? 'rgba(255,255,255,0.05)' 
-      : 'rgba(255,255,255,0.1)',
+    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)',
+    filter: 'blur(40px)',
     zIndex: 0,
-  }
+  },
+  shape1: {
+    width: '300px',
+    height: '300px',
+    top: '-150px',
+    right: '-100px',
+  },
+  shape2: {
+    width: '250px',
+    height: '250px',
+    bottom: '-100px',
+    left: '-100px',
+  },
 }));
 
+// Componente do ícone de mensagem melhorado
+const MessageIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+      stroke="white" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      fill="white"
+    />
+  </svg>
+);
+
 const Login = () => {
-    const theme = useTheme();
     const classes = useStyles();
-    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
     const [user, setUser] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const { handleLogin, loading } = useContext(AuthContext);
     const [viewregister, setviewregister] = useState('disabled');
 
@@ -168,6 +372,10 @@ const Login = () => {
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
+    };
+
+    const handleRememberMeChange = (e) => {
+        setRememberMe(e.target.checked);
     };
 
     useEffect(() => {
@@ -189,110 +397,142 @@ const Login = () => {
         handleLogin(user);
     };
 
-    const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/login.png`;
-    const randomValue = Math.random();
-    const logoWithRandom = `${logo}?r=${randomValue}`;
-
     return (
         <div className={classes.root}>
-            {/* Decorative circles */}
-            <div className={classes.decorativeCircle} style={{ width: 300, height: 300, top: -150, left: -150 }} />
-            <div className={classes.decorativeCircle} style={{ width: 200, height: 200, bottom: -100, right: -100 }} />
+            <div className={`${classes.floatingShape} ${classes.shape1}`}></div>
+            <div className={`${classes.floatingShape} ${classes.shape2}`}></div>
             
             <div className={classes.loginContainer}>
                 <div className={classes.logoContainer}>
-                    <img src={logoWithRandom} alt="Logo" />
+                    <div className={classes.logoIcon}>
+                        <MessageIcon />
+                    </div>
+                    <h1 className={classes.brandName}>
+                        <span>Delfin</span>Zap
+                    </h1>
+                    <p className={classes.brandSubtitle}>Plataforma de múltiplos atendimentos</p>
                 </div>
                 
                 <div className={classes.loginCard}>
-                    <Typography variant="h5" className={classes.formTitle}>
-                        Acesse sua conta
+                    <Typography className={classes.formTitle}>
+                        Bem-vindo de volta
+                    </Typography>
+                    <Typography className={classes.formSubtitle}>
+                        Novo por aqui? <Link component={RouterLink} to="/signup">Crie sua conta grátis</Link>
                     </Typography>
                     
                     <form className={classes.form} onSubmit={handlSubmit}>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label={i18n.t("login.form.email")}
-                            name="email"
-                            value={user.email}
-                            onChange={handleChangeInput}
-                            autoComplete="email"
-                            className={classes.inputField}
-                            placeholder="seu@email.com"
-                        />
+                        <div>
+                            <label className={classes.inputLabel}>E-mail</label>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="email"
+                                name="email"
+                                value={user.email}
+                                onChange={handleChangeInput}
+                                autoComplete="email"
+                                className={classes.inputField}
+                                placeholder="seu@email.com"
+                            />
+                        </div>
                         
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label={i18n.t("login.form.password")}
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            value={user.password}
-                            onChange={handleChangeInput}
-                            autoComplete="current-password"
-                            className={classes.inputField}
-                            placeholder="••••••••"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            edge="end"
-                                            color={theme.palette.type === 'dark' ? 'default' : 'primary'}
-                                        >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                        <div>
+                            <label className={classes.inputLabel}>Senha</label>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                value={user.password}
+                                onChange={handleChangeInput}
+                                autoComplete="current-password"
+                                className={classes.inputField}
+                                placeholder="••••••••"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                edge="end"
+                                                size="small"
+                                                className={classes.passwordToggle}
+                                            >
+                                                {showPassword ? <Visibility fontSize="small" /> : <VisibilityOff fontSize="small" />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </div>
+                        
+                        <div className={classes.checkboxContainer}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={rememberMe}
+                                        onChange={handleRememberMeChange}
+                                        name="rememberMe"
+                                        size="small"
+                                    />
+                                }
+                                label="Manter conectado"
+                                className={classes.checkboxLabel}
+                            />
+                            <Link
+                                component={RouterLink}
+                                to="/forgetpsw"
+                                className={classes.forgotPassword}
+                            >
+                                Esqueceu a senha?
+                            </Link>
+                        </div>
                         
                         <Button
                             type="submit"
-                            fullWidth
                             variant="contained"
-                            color="primary"
                             className={classes.submitButton}
                             disabled={loading}
                         >
                             {loading ? (
-                                <CircularProgress size={24} color="inherit" />
+                                <CircularProgress size={22} color="inherit" />
                             ) : (
-                                i18n.t("login.buttons.submit")
+                                "Entrar na plataforma"
                             )}
                         </Button>
                         
-                        <Grid container justifyContent="space-between">
-                            <Grid item>
-                                {viewregister === "enabled" && (
-                                    <Link
-                                        component={RouterLink}
-                                        to="/signup"
-                                        className={classes.linkText}
-                                    >
-                                        Criar conta
-                                    </Link>
-                                )}
-                            </Grid>
-                            <Grid item>
-                                <Link
-                                    component={RouterLink}
-                                    to="/forgetpsw"
-                                    className={classes.linkText}
-                                >
-                                    Esqueceu a senha?
-                                </Link>
-                            </Grid>
-                        </Grid>
+                        <div className={classes.dividerContainer}>
+                            <Divider />
+                            <span className={classes.dividerText}>ou continue com</span>
+                        </div>
+                        
+                        <div className={classes.socialLogin}>
+                            <Button className={classes.socialButton}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
+                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                                Google
+                            </Button>
+                            <Button className={classes.socialButton}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginRight: 8 }}>
+                                    <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                Facebook
+                            </Button>
+                        </div>
                     </form>
+                    
+                    <div className={classes.footer}>
+                        © 2025 DelfinZap. Todos os direitos reservados.<br />
+                        <Link href="#">Termos de uso</Link> • <Link href="#">Política de privacidade</Link>
+                    </div>
                 </div>
             </div>
         </div>

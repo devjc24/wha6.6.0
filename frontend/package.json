@@ -14,8 +14,8 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.5",
-    "@mui/icons-material": "^5.14.1",
-    "@mui/material": "^5.10.13",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
     "@mui/x-date-pickers": "^6.0.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
@@ -25,6 +25,7 @@
     "bootstrap": "^5.2.3",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.1.0",
+    "compression": "^1.7.4",
     "compressorjs": "^1.2.1",
     "context": "^4.0.0",
     "date-fns": "^2.30.0",
@@ -33,10 +34,12 @@
     "formik": "^2.4.0",
     "formik-material-ui": "^3.0.1",
     "gn-api-sdk-node": "^3.0.2",
+    "helmet": "^6.1.5",
     "html2pdf.js": "^0.10.2",
     "i18next": "^19.8.2",
     "i18next-browser-languagedetector": "^6.0.1",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.525.0",
     "markdown-to-jsx": "^7.7.4",
     "material-ui-color": "^1.2.0",
     "material-ui-nested-menu-item": "^1.0.2",
@@ -77,9 +80,7 @@
     "uuid": "^8.3.2",
     "vcard-parser": "^1.0.0",
     "xlsx": "^0.18.5",
-    "yup": "^0.32.8",
-    "compression": "^1.7.4",
-    "helmet": "^6.1.5"
+    "yup": "^0.32.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -108,10 +109,13 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "autoprefixer": "^10.4.21",
     "cache-loader": "^4.1.0",
     "hard-source-webpack-plugin": "^0.13.1",
+    "postcss": "^8.5.6",
     "react-refresh": "^0.14.0",
     "source-map-explorer": "^2.5.3",
+    "tailwindcss": "^4.1.11",
     "thread-loader": "^3.0.4"
   }
 }

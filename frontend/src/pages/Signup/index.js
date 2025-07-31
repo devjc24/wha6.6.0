@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import qs from 'query-string';
+import qs from "query-string";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
@@ -7,37 +7,50 @@ import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import usePlans from "../../hooks/usePlans";
 import api from "../../services/api";
-import InputMask from 'react-input-mask';
+import InputMask from "react-input-mask";
 import {
-	Avatar,
-	Button,
-	TextField,
-	Link,
-	Grid,
-	Box,
-	Paper,
-	Typography,
-	Card,
-	CardContent,
-	CardHeader,
-	CardActions,
-	Stepper,
-	Step,
-	StepLabel,
-	useMediaQuery,
-	Fade,
-	Slide,
-	Badge
+  Button,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  useMediaQuery,
+  Fade,
+  Slide,
+  Card,
+  CardContent,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  CircularProgress,
+  Chip,
+  IconButton,
+  InputAdornment,
 } from "@material-ui/core";
-import {
-	LockOutlined,
-	CheckCircle,
-	Business,
-	Phone,
-	Email,
-	VpnKey,
-	ArrowBack,
-	Star
+import { 
+  ArrowBack, 
+  CheckCircle, 
+  Star, 
+  TrendingUp, 
+  Business,
+  Visibility,
+  VisibilityOff,
+  FlashOn,
+  Lock,
+  Speed,
+  HeadsetMic,
+  Group,
+  Send,
+  DateRange,
+  Forum,
+  Code,
+  ArrowForward,
+  EmojiEvents
 } from "@material-ui/icons";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -46,752 +59,1102 @@ import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import moment from "moment";
 
-const nomeEmpresa = process.env.REACT_APP_COPYRIGHT || '';
-const versionSystem = process.env.REACT_APP_VERSION || '';
+const nomeEmpresa = process.env.REACT_APP_COPYRIGHT || "";
+const versionSystem = process.env.REACT_APP_VERSION || "";
 
-const Copyright = () => {
-	return (
-		<Typography variant="body2" color="textSecondary" align="center">
-			{"Copyright © "}
-			<Link color="inherit" href="#">
-				{ nomeEmpresa } - v{ versionSystem }
-			</Link>{" "}
-			{new Date().getFullYear()}
-			{"."}
-		</Typography>
-	);
-};
+// Componente do ícone de mensagem melhorado
+const MessageIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+      stroke="white" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      fill="white"
+    />
+  </svg>
+);
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		display: 'flex',
-		flexDirection: 'column',
-		minHeight: '100vh',
-		background: theme.palette.type === 'light'
-			? '#f8fafc'
-			: '#0f172a',
-	},
-	container: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		flex: 1,
-		padding: theme.spacing(4, 2),
-	},
-	hero: {
-		textAlign: 'center',
-		marginBottom: theme.spacing(4),
-		maxWidth: 800,
-	},
-	heroTitle: {
-		fontWeight: 800,
-		marginBottom: theme.spacing(2),
-		background: theme.palette.primary.main,
-		WebkitBackgroundClip: 'text',
-		WebkitTextFillColor: 'transparent',
-		fontSize: '2.5rem',
-		[theme.breakpoints.down('sm')]: {
-			fontSize: '2rem',
-		},
-	},
-	heroSubtitle: {
-		color: theme.palette.text.secondary,
-		fontSize: '1.1rem',
-		lineHeight: 1.6,
-	},
-	formContainer: {
-		width: '100%',
-		maxWidth: 1200,
-	},
-	paper: {
-		padding: theme.spacing(4),
-		borderRadius: 16,
-		background: theme.palette.background.paper,
-		border: theme.palette.type === 'light'
-			? '1px solid #e2e8f0'
-			: '1px solid #1e293b',
-		boxShadow: theme.palette.type === 'light'
-			? '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)'
-			: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.15)',
-		position: 'relative',
-		overflow: 'hidden',
-		'&:before': {
-			content: '""',
-			position: 'absolute',
-			top: 0,
-			left: 0,
-			right: 0,
-			height: 6,
-			background: theme.palette.primary.main,
-		},
-	},
-	avatar: {
-		margin: '0 auto',
-		background: theme.palette.primary.main,
-		width: 64,
-		height: 64,
-	},
-	form: {
-		width: "100%",
-	},
-	submit: {
-		margin: theme.spacing(3, 0, 2),
-		padding: theme.spacing(1.75),
-		fontSize: '1rem',
-		fontWeight: 600,
-		borderRadius: 12,
-		background: theme.palette.primary.main,
-		color: 'white',
-		textTransform: 'none',
-		letterSpacing: 0.5,
-		boxShadow: `0 4px 6px -1px ${theme.palette.primary.light}20`,
-		'&:hover': {
-			background: theme.palette.primary.dark,
-			boxShadow: `0 10px 15px -3px ${theme.palette.primary.light}30`,
-		},
-	},
-	logoContainer: {
-		display: 'flex',
-		justifyContent: 'center',
-		marginBottom: theme.spacing(3),
-	},
-	logo: {
-		maxWidth: 180,
-		height: 'auto',
-		transition: 'all 0.3s ease',
-	},
-	title: {
-		marginBottom: theme.spacing(3),
-		fontWeight: 700,
-		textAlign: 'center',
-		color: theme.palette.text.primary,
-	},
-	pricingCard: {
-		height: '100%',
-		display: 'flex',
-		flexDirection: 'column',
-		borderRadius: 16,
-		background: theme.palette.background.paper,
-		border: '1px solid',
-		borderColor: theme.palette.divider,
-		transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-		overflow: 'hidden',
-		position: 'relative',
-		'&:hover': {
-			transform: 'translateY(-8px)',
-			boxShadow: theme.shadows[6],
-			borderColor: theme.palette.primary.main,
-		},
-	},
-	pricingCardSelected: {
-		borderColor: theme.palette.primary.main,
-		boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-		transform: 'translateY(-8px)',
-	},
-	pricingCardHeader: {
-		padding: theme.spacing(3),
-		background: theme.palette.type === 'light'
-			? '#f1f5f9'
-			: '#1e293b',
-		position: 'relative',
-	},
-	pricingCardTitle: {
-		fontWeight: 700,
-		color: theme.palette.text.primary,
-		textAlign: 'center',
-	},
-	pricingCardPrice: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'baseline',
-		marginBottom: theme.spacing(2),
-	},
-	pricingCardPriceAmount: {
-		fontSize: '2.25rem',
-		fontWeight: 800,
-		lineHeight: 1,
-		color: theme.palette.primary.main,
-	},
-	pricingCardFeatures: {
-		padding: theme.spacing(3),
-		flexGrow: 1,
-	},
-	pricingCardFeature: {
-		display: 'flex',
-		alignItems: 'center',
-		padding: theme.spacing(1.5, 0),
-		color: theme.palette.text.secondary,
-	},
-	featureIcon: {
-		color: theme.palette.primary.main,
-		marginRight: theme.spacing(1.5),
-		fontSize: '1.2rem',
-	},
-	stepper: {
-		padding: theme.spacing(3, 0, 5),
-		maxWidth: 600,
-		margin: '0 auto',
-		'& .MuiStepIcon-root.MuiStepIcon-active': {
-			color: theme.palette.primary.main,
-		},
-		'& .MuiStepIcon-root.MuiStepIcon-completed': {
-			color: theme.palette.primary.main,
-		},
-		'& .MuiStepLabel-label.MuiStepLabel-active': {
-			color: theme.palette.primary.main,
-			fontWeight: 600,
-		},
-	},
-	backButton: {
-		marginRight: theme.spacing(1),
-		color: theme.palette.text.secondary,
-		borderRadius: 8,
-		padding: theme.spacing(1, 2),
-		'&:hover': {
-			backgroundColor: theme.palette.action.hover,
-		},
-	},
-	stepContent: {
-		marginTop: theme.spacing(2),
-	},
-	planSummary: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		padding: theme.spacing(2.5),
-		background: theme.palette.action.selected,
-		borderRadius: 12,
-		marginBottom: theme.spacing(3),
-		border: `1px solid ${theme.palette.divider}`,
-	},
-	planName: {
-		fontWeight: 600,
-		color: theme.palette.primary.main,
-	},
-	popularBadge: {
-		position: 'absolute',
-		top: 0,
-		right: 0,
-		transform: 'translateY(-50%)',
-		backgroundColor: theme.palette.warning.main,
-		color: theme.palette.getContrastText(theme.palette.warning.main),
-		fontWeight: 700,
-		padding: theme.spacing(0.5, 2),
-		borderRadius: 16,
-		fontSize: '0.75rem',
-		display: 'flex',
-		alignItems: 'center',
-		boxShadow: theme.shadows[2],
-		'& svg': {
-			fontSize: '0.9rem',
-			marginRight: theme.spacing(0.5),
-		},
-	},
-	inputField: {
-		'& .MuiOutlinedInput-root': {
-			borderRadius: 12,
-			'& fieldset': {
-				borderColor: theme.palette.divider,
-			},
-			'&:hover fieldset': {
-				borderColor: theme.palette.primary.light,
-			},
-			'&.Mui-focused fieldset': {
-				borderColor: theme.palette.primary.main,
-				boxShadow: `0 0 0 2px ${theme.palette.primary.light}40`,
-			},
-		},
-	},
-	stepLabel: {
-		'& .MuiStepLabel-label': {
-			fontWeight: 600,
-			fontSize: '1rem',
-		},
-	},
+  root: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    position: "relative",
+    overflow: "hidden",
+    padding: theme.spacing(3, 0),
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      width: "200%",
+      height: "200%",
+      background: "radial-gradient(circle, rgba(34, 197, 94, 0.1) 1px, transparent 1px)",
+      backgroundSize: "50px 50px",
+      top: "-50%",
+      left: "-50%",
+      transform: "rotate(30deg)",
+      opacity: 0.3,
+    },
+  },
+  backButton: {
+    background: "transparent",
+    color: "#64748b",
+    padding: "12px 24px",
+    borderRadius: "10px",
+    fontWeight: 500,
+    fontSize: "14px",
+    textTransform: "none",
+    boxShadow: "none",
+    marginBottom: theme.spacing(3),
+    border: "1px solid #e2e8f0",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      backgroundColor: "#f8fafc",
+      borderColor: "#cbd5e1",
+      transform: "translateX(-4px)",
+    },
+  },
+  signUpContainer: {
+    width: "100%",
+    maxWidth: 1400,
+    margin: theme.spacing(2),
+    position: "relative",
+    zIndex: 1,
+  },
+  logoContainer: {
+    textAlign: "center",
+    marginBottom: theme.spacing(5),
+    animation: "$fadeInDown 0.8s ease-out",
+  },
+  "@keyframes fadeInDown": {
+    from: {
+      opacity: 0,
+      transform: "translateY(-20px)",
+    },
+    to: {
+      opacity: 1,
+      transform: "translateY(0)",
+    },
+  },
+  "@keyframes fadeInUp": {
+    from: {
+      opacity: 0,
+      transform: "translateY(20px)",
+    },
+    to: {
+      opacity: 1,
+      transform: "translateY(0)",
+    },
+  },
+  "@keyframes pulse": {
+    "0%, 100%": {
+      transform: "scale(1)",
+    },
+    "50%": {
+      transform: "scale(1.05)",
+    },
+  },
+  logoIcon: {
+    width: 80,
+    height: 80,
+    background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+    borderRadius: "20px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: theme.spacing(3),
+    boxShadow: "0 8px 32px rgba(34, 197, 94, 0.3)",
+    transform: "rotate(-5deg)",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "rotate(0deg) scale(1.05)",
+    },
+    "& svg": {
+      width: 40,
+      height: 40,
+      fill: "white",
+    },
+  },
+  brandName: {
+    fontSize: "32px",
+    fontWeight: 800,
+    color: "#0f172a",
+    margin: 0,
+    marginBottom: "8px",
+    letterSpacing: "-0.03em",
+    "& span": {
+      background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      backgroundClip: "text",
+    },
+  },
+  brandSubtitle: {
+    fontSize: "15px",
+    color: "#64748b",
+    margin: 0,
+    fontWeight: 400,
+    letterSpacing: "0.01em",
+  },
+  signUpCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: "24px",
+    padding: "48px",
+    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.04)",
+    border: "1px solid rgba(255, 255, 255, 0.8)",
+    animation: "$fadeInUp 0.8s ease-out 0.2s both",
+    [theme.breakpoints.down("sm")]: {
+      padding: "32px 24px",
+    },
+    background: "rgba(255, 255, 255, 0.95)", // Fallback para backdrop-filter
+    backdropFilter: "blur(10px)",
+  },
+  formTitle: {
+    fontSize: "32px",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(1),
+    letterSpacing: "-0.03em",
+    textAlign: "center",
+  },
+  formSubtitle: {
+    fontSize: "16px",
+    color: "#64748b",
+    marginBottom: theme.spacing(4),
+    fontWeight: 400,
+    textAlign: "center",
+    lineHeight: 1.6,
+    maxWidth: "600px",
+    margin: "0 auto",
+    marginBottom: theme.spacing(4),
+    "& a": {
+      color: "#22c55e",
+      textDecoration: "none",
+      fontWeight: 600,
+      transition: "all 0.2s ease",
+      "&:hover": {
+        color: "#16a34a",
+        textDecoration: "underline",
+      },
+    },
+  },
+  stepper: {
+    backgroundColor: "transparent",
+    padding: theme.spacing(3, 0, 5),
+    "& .MuiStepIcon-root": {
+      color: "#e2e8f0",
+      fontSize: "2.2rem",
+      transition: "all 0.3s ease",
+    },
+    "& .MuiStepIcon-root.MuiStepIcon-active": {
+      color: "#22c55e",
+      filter: "drop-shadow(0 4px 12px rgba(34, 197, 94, 0.4))",
+    },
+    "& .MuiStepIcon-root.MuiStepIcon-completed": {
+      color: "#22c55e",
+    },
+    "& .MuiStepLabel-label": {
+      color: "#64748b",
+      fontSize: "15px",
+      fontWeight: 500,
+      marginTop: theme.spacing(1),
+    },
+    "& .MuiStepLabel-label.MuiStepLabel-active": {
+      color: "#22c55e",
+      fontWeight: 600,
+    },
+    "& .MuiStepLabel-label.MuiStepLabel-completed": {
+      color: "#22c55e",
+      fontWeight: 600,
+    },
+    "& .MuiStepConnector-lineHorizontal": {
+      borderColor: "#e2e8f0",
+      borderTopWidth: "2px",
+    },
+    "& .MuiStepConnector-root.MuiStepConnector-active .MuiStepConnector-lineHorizontal": {
+      borderColor: "#22c55e",
+    },
+    "& .MuiStepConnector-root.MuiStepConnector-completed .MuiStepConnector-lineHorizontal": {
+      borderColor: "#22c55e",
+    },
+  },
+  form: {
+    width: "100%",
+    maxWidth: "500px",
+    margin: "0 auto",
+  },
+  inputLabel: {
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "#1e293b",
+    marginBottom: theme.spacing(1),
+    textAlign: "left",
+    display: "block",
+    letterSpacing: "0.01em",
+  },
+  inputField: {
+    marginBottom: theme.spacing(3),
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "12px",
+      backgroundColor: "#f8fafc",
+      fontSize: "16px",
+      transition: "all 0.3s ease",
+      "& fieldset": {
+        borderColor: "#e2e8f0",
+        borderWidth: "1px",
+        transition: "all 0.3s ease",
+      },
+      "&:hover": {
+        backgroundColor: "#f1f5f9",
+        "& fieldset": {
+          borderColor: "#cbd5e1",
+        },
+      },
+      "&.Mui-focused": {
+        backgroundColor: "white",
+        "& fieldset": {
+          borderColor: "#22c55e",
+          borderWidth: "2px",
+        },
+      },
+      "& input": {
+        padding: "16px 18px",
+        fontSize: "15px",
+        fontWeight: 400,
+        letterSpacing: "0.01em",
+      },
+      "& input::placeholder": {
+        color: "#94a3b8",
+        opacity: 1,
+      },
+    },
+    "& .MuiInputLabel-root": {
+      display: "none",
+    },
+    "& .MuiFormHelperText-root": {
+      marginLeft: "4px",
+      fontSize: "13px",
+      marginTop: "6px",
+    },
+  },
+  passwordToggle: {
+    color: "#94a3b8",
+    "&:hover": {
+      color: "#64748b",
+    },
+  },
+  submitButton: {
+    width: "100%",
+    background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+    color: "white",
+    padding: "16px",
+    borderRadius: "12px",
+    fontWeight: 600,
+    fontSize: "16px",
+    textTransform: "none",
+    boxShadow: "0 4px 14px 0 rgba(34, 197, 94, 0.3)",
+    marginBottom: theme.spacing(3),
+    letterSpacing: "0.025em",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      background: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
+      boxShadow: "0 6px 20px 0 rgba(34, 197, 94, 0.4)",
+      transform: "translateY(-1px)",
+    },
+    "&:active": {
+      transform: "translateY(0)",
+    },
+    "&:disabled": {
+      background: "#cbd5e1",
+      color: "white",
+      boxShadow: "none",
+    },
+  },
+  backToLoginButton: {
+    position: "absolute",
+    top: theme.spacing(2),
+    left: theme.spacing(2),
+    background: "rgba(255, 255, 255, 0.9)",
+    color: "#64748b",
+    padding: "10px 20px",
+    borderRadius: "10px",
+    fontWeight: 500,
+    fontSize: "14px",
+    textTransform: "none",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+    border: "1px solid #e2e8f0",
+    background: "rgba(255, 255, 255, 0.9)", // Fallback para backdrop-filter
+    backdropFilter: "blur(10px)",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      backgroundColor: "white",
+      borderColor: "#cbd5e1",
+      transform: "translateX(-2px)",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    },
+    [theme.breakpoints.down("sm")]: {
+      position: "relative",
+      top: "auto",
+      left: "auto",
+      marginBottom: theme.spacing(2),
+      width: "100%",
+    },
+  },
+  planCard: {
+    backgroundColor: "white",
+    border: "2px solid #e2e8f0",
+    borderRadius: "20px",
+    padding: theme.spacing(3),
+    marginBottom: theme.spacing(2),
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
+    position: "relative",
+    overflow: "hidden",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    "&:hover": {
+      borderColor: "#22c55e",
+      backgroundColor: "#f8fdf9",
+      transform: "translateY(-8px)",
+      boxShadow: "0 20px 40px -15px rgba(34, 197, 94, 0.2)",
+    },
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: "4px",
+      background: "transparent",
+      transition: "background 0.3s ease",
+    },
+  },
+  planCardSelected: {
+    borderColor: "#22c55e",
+    backgroundColor: "#f0fdf4",
+    transform: "translateY(-8px)",
+    boxShadow: "0 20px 40px -15px rgba(34, 197, 94, 0.25)",
+    "&::before": {
+      background: "linear-gradient(90deg, #22c55e 0%, #16a34a 100%)",
+    },
+    "& $planIcon": {
+      background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+      "& svg": {
+        color: "white",
+      },
+    },
+  },
+  planCardPopular: {
+    position: "relative",
+    "&::after": {
+      content: '"MAIS POPULAR"',
+      position: "absolute",
+      top: "20px",
+      right: "20px",
+      background: "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)",
+      color: "white",
+      padding: "6px 16px",
+      borderRadius: "20px",
+      fontSize: "11px",
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: "0.08em",
+      boxShadow: "0 4px 12px rgba(245, 158, 11, 0.3)",
+    },
+  },
+  planHeader: {
+    marginBottom: theme.spacing(3),
+    textAlign: "center",
+  },
+  planIcon: {
+    width: "50px",
+    height: "50px",
+    borderRadius: "14px",
+    background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+    marginBottom: theme.spacing(2),
+    transition: "all 0.3s ease",
+    "& svg": {
+      color: "#22c55e",
+      fontSize: "24px",
+    },
+  },
+  planName: {
+    fontSize: "20px",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(0.5),
+    lineHeight: 1.2,
+    letterSpacing: "-0.02em",
+  },
+  planDescription: {
+    fontSize: "14px",
+    color: "#64748b",
+    marginBottom: theme.spacing(3),
+    lineHeight: 1.5,
+  },
+  planPricing: {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: theme.spacing(0.5),
+    marginBottom: theme.spacing(3),
+  },
+  planPrice: {
+    fontSize: "28px",
+    fontWeight: 800,
+    color: "#0f172a",
+    lineHeight: 1,
+  },
+  planPriceCurrency: {
+    fontSize: "20px",
+    fontWeight: 600,
+    color: "#64748b",
+  },
+  planPeriod: {
+    fontSize: "16px",
+    color: "#94a3b8",
+    fontWeight: 500,
+  },
+  planFeatures: {
+    flex: 1,
+    "& .feature": {
+      display: "flex",
+      alignItems: "center",
+      marginBottom: theme.spacing(1.5),
+      fontSize: "13px",
+      color: "#475569",
+      fontWeight: 500,
+      "& svg": {
+        marginRight: theme.spacing(1),
+        color: "#22c55e",
+        fontSize: "18px",
+      },
+    },
+  },
+  planCta: {
+    marginTop: theme.spacing(3),
+    paddingTop: theme.spacing(3),
+    borderTop: "1px solid #f1f5f9",
+  },
+  planButton: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    fontWeight: 600,
+    fontSize: "15px",
+    textTransform: "none",
+    transition: "all 0.3s ease",
+    letterSpacing: "0.02em",
+  },
+  planButtonPrimary: {
+    background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+    color: "white",
+    boxShadow: "0 4px 14px rgba(34, 197, 94, 0.3)",
+    "&:hover": {
+      boxShadow: "0 6px 20px rgba(34, 197, 94, 0.4)",
+      transform: "translateY(-1px)",
+    },
+  },
+  planButtonSecondary: {
+    background: "transparent",
+    color: "#22c55e",
+    border: "2px solid #22c55e",
+    "&:hover": {
+      backgroundColor: "#f0fdf4",
+      borderColor: "#16a34a",
+      color: "#16a34a",
+    },
+  },
+  footer: {
+    fontSize: "12px",
+    color: "#94a3b8",
+    lineHeight: "1.6",
+    fontWeight: 400,
+    textAlign: "center",
+    marginTop: theme.spacing(3),
+    "& a": {
+      color: "#22c55e",
+      textDecoration: "none",
+      fontWeight: 500,
+      transition: "color 0.2s ease",
+      "&:hover": {
+        color: "#16a34a",
+        textDecoration: "underline",
+      },
+    },
+  },
+  trialBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
+    color: "white",
+    padding: "10px 24px",
+    borderRadius: "30px",
+    fontSize: "14px",
+    fontWeight: 600,
+    marginBottom: theme.spacing(4),
+    boxShadow: "0 4px 14px rgba(251, 191, 36, 0.3)",
+    letterSpacing: "0.02em",
+    animation: "$pulse 2s ease-in-out infinite",
+    "& svg": {
+      marginRight: theme.spacing(1),
+      fontSize: "20px",
+    },
+  },
+  plansGrid: {
+    marginBottom: theme.spacing(4),
+  },
+  selectedPlanAlert: {
+    background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+    padding: "20px",
+    borderRadius: "12px",
+    marginBottom: theme.spacing(3),
+    border: "2px solid #bbf7d0",
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(2),
+    "& .icon": {
+      width: "48px",
+      height: "48px",
+      borderRadius: "12px",
+      background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      "& svg": {
+        color: "white",
+        fontSize: "24px",
+      },
+    },
+    "& .content": {
+      flex: 1,
+      "& .title": {
+        fontSize: "16px",
+        color: "#166534",
+        fontWeight: 600,
+        marginBottom: "4px",
+      },
+      "& .subtitle": {
+        fontSize: "14px",
+        color: "#15803d",
+        fontWeight: 500,
+      },
+    },
+  },
+  securityInfo: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing(1),
+    marginTop: theme.spacing(2),
+    fontSize: "13px",
+    color: "#64748b",
+    "& svg": {
+      fontSize: "16px",
+      color: "#22c55e",
+    },
+  },
+  floatingShape: {
+    position: "absolute",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)",
+    filter: "blur(40px)",
+    zIndex: 0,
+  },
+  shape1: {
+    width: "400px",
+    height: "400px",
+    top: "-200px",
+    right: "-150px",
+  },
+  shape2: {
+    width: "350px",
+    height: "350px",
+    bottom: "50px",
+    left: "-50px",
+  },
 }));
 
 const UserSchema = Yup.object().shape({
-	name: Yup.string()
-		.min(2, "Nome muito curto!")
-		.max(50, "Nome muito longo!")
-		.required("Obrigatório"),
-	password: Yup.string()
-		.min(5, "Senha muito curta! Mínimo 5 caracteres")
-		.max(50, "Senha muito longa!")
-		.required("Obrigatório"),
-	email: Yup.string()
-		.email("Email inválido")
-		.required("Obrigatório"),
-	phone: Yup.string()
-		.min(15, "Telefone incompleto")
-		.required("Obrigatório"),
+  name: Yup.string()
+    .min(2, "Nome muito curto!")
+    .max(50, "Nome muito longo!")
+    .required("Campo obrigatório"),
+  password: Yup.string()
+    .min(5, "Senha muito curta! Mínimo 5 caracteres")
+    .max(50, "Senha muito longa!")
+    .required("Campo obrigatório"),
+  email: Yup.string().email("Email inválido").required("Campo obrigatório"),
+  phone: Yup.string().min(15, "Telefone incompleto").required("Campo obrigatório"),
+  planId: Yup.string().required("Selecione um plano"),
 });
 
 const SignUp = () => {
-	const classes = useStyles();
-	const history = useHistory();
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-	const [allowregister, setallowregister] = useState('enabled');
-	const [trial, settrial] = useState('3');
-	const [activeStep, setActiveStep] = useState(0);
-	const [selectedPlan, setSelectedPlan] = useState(null);
+  const classes = useStyles();
+  const history = useHistory();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [allowregister, setallowregister] = useState("enabled");
+  const [trial, settrial] = useState("3");
+  const [activeStep, setActiveStep] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-	const logoLight = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
-	const logoDark = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`;
+  let companyId = null;
 
-	let companyId = null;
+  useEffect(() => {
+    fetchallowregister();
+    fetchtrial();
+  }, []);
 
-	useEffect(() => {
-		fetchallowregister();
-		fetchtrial();
-	}, []);
+  const fetchtrial = async () => {
+    try {
+      const responsevvv = await api.get("/settings/trial");
+      const allowtrialX = responsevvv.data.value;
+      settrial(allowtrialX);
+    } catch (error) {
+      console.error("Error retrieving trial", error);
+    }
+  };
 
-	const fetchtrial = async () => {
-		try {
-			const responsevvv = await api.get("/settings/trial");
-			const allowtrialX = responsevvv.data.value;
-			settrial(allowtrialX);
-		} catch (error) {
-			console.error('Error retrieving trial', error);
-		}
-	};
+  const fetchallowregister = async () => {
+    try {
+      const responsevv = await api.get("/settings/allowregister");
+      const allowregisterX = responsevv.data.value;
+      setallowregister(allowregisterX);
+    } catch (error) {
+      console.error("Error retrieving allowregister", error);
+    }
+  };
 
-	const fetchallowregister = async () => {
-		try {
-			const responsevv = await api.get("/settings/allowregister");
-			const allowregisterX = responsevv.data.value;
-			setallowregister(allowregisterX);
-		} catch (error) {
-			console.error('Error retrieving allowregister', error);
-		}
-	};
+  if (allowregister === "disabled") {
+    history.push("/login");
+  }
 
-	if (allowregister === "disabled") {
-		history.push("/login");
-	}
+  const params = qs.parse(window.location.search);
+  if (params.companyId !== undefined) {
+    companyId = params.companyId;
+  }
 
-	const params = qs.parse(window.location.search);
-	if (params.companyId !== undefined) {
-		companyId = params.companyId;
-	}
+  const initialState = {
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    planId: "",
+  };
 
-	const initialState = {
-		name: "",
-		email: "",
-		phone: "",
-		password: "",
-		planId: selectedPlan?.id || ""
-	};
+  const dueDate = moment().add(trial, "day").format();
 
-	const dueDate = moment().add(trial, "day").format();
+  const handleSignUp = async (values) => {
+    setLoading(true);
+    Object.assign(values, {
+      recurrence: "MENSAL",
+      dueDate: dueDate,
+      status: "t",
+      campaignsEnabled: true,
+    });
 
-	const handleSignUp = async values => {
-		Object.assign(values, {
-			recurrence: "MENSAL",
-			dueDate: dueDate,
-			status: "t",
-			campaignsEnabled: true,
-			planId: selectedPlan.id
-		});
+    try {
+      await openApi.post("/companies/cadastro", values);
+      toast.success(i18n.t("signup.toasts.success"));
+      history.push("/login");
+    } catch (err) {
+      console.log(err);
+      toastError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-		try {
-			await openApi.post("/companies/cadastro", values);
-			toast.success(i18n.t("signup.toasts.success"));
-			history.push("/login");
-		} catch (err) {
-			console.log(err);
-			toastError(err);
-		}
-	};
+  const [plans, setPlans] = useState([]);
+  const { register: listPlans } = usePlans();
 
-	const [plans, setPlans] = useState([]);
-	const { register: listPlans } = usePlans();
+  useEffect(() => {
+    async function fetchData() {
+      const list = await listPlans();
+      setPlans(list);
+    }
+    fetchData();
+  }, []);
 
-	useEffect(() => {
-		async function fetchData() {
-			const list = await listPlans();
-			setPlans(list);
-		}
-		fetchData();
-	}, []);
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
 
-	const handleNext = () => {
-		setActiveStep((prevActiveStep) => prevActiveStep + 1);
-	};
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
-	const handleBack = () => {
-		setActiveStep((prevActiveStep) => prevActiveStep - 1);
-	};
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
-	const handlePlanSelect = (plan) => {
-		setSelectedPlan(plan);
-		handleNext();
-	};
+  const steps = ["Escolha seu plano", "Crie sua conta"];
 
-	const steps = ['Selecione seu plano', 'Crie sua conta'];
+  const   getPlanIcon = (index) => {
+    const icons = [<FlashOn />, <TrendingUp />, <Star />, <EmojiEvents />];
+    return icons[index % icons.length];
+  };
 
-	// Identificar o plano mais popular (com maior valor)
-	const popularPlan = plans.length > 0
-		? plans.reduce((prev, current) =>
-			(prev.value > current.value) ? prev : current)
-		: null;
+  const getPlanDescription = (plan) => {
+    const descriptions = {
+      0: "Ideal para pequenas empresas e startups",
+      1: "Perfeito para negócios em crescimento",
+      2: "Solução completa para grandes empresas",
+      3: "Máximo desempenho e recursos ilimitados"
+    };
+    return descriptions[plans.indexOf(plan)] || "Transforme seu atendimento ao cliente";
+  };
 
-	return (
-		<div className={classes.root}>
-			<Container maxWidth="lg" className={classes.container}>
-				<div className={classes.logoContainer}>
-					<img
-						src={theme.palette.type === 'light' ? logoLight : logoDark}
-						className={classes.logo}
-						alt={`${process.env.REACT_APP_NAME_SYSTEM}`}
-					/>
-				</div>
+  const getFeatureIcon = (feature) => {
+    const icons = {
+      connections: <Group />,
+      users: <HeadsetMic />,
+      campaigns: <Send />,
+      schedules: <DateRange />,
+      chat: <Forum />,
+      api: <Code />
+    };
+    return icons[feature] || <CheckCircle />;
+  };
 
-				<div className={classes.hero}>
-					<Typography variant="h3" className={classes.heroTitle} gutterBottom>
-						Transforme sua comunicação com nosso sistema
-					</Typography>
-					<Typography variant="h6" className={classes.heroSubtitle}>
-						Experimente gratuitamente por {trial} dias todas as funcionalidades
-						da nossa plataforma. Sem necessidade de cartão de crédito.
-					</Typography>
-				</div>
+  const PlanCard = ({ plan, isSelected, onClick, index }) => (
+    <div
+      className={`${classes.planCard} ${
+        isSelected ? classes.planCardSelected : ""
+      } ${index === 1 ? classes.planCardPopular : ""}`}
+      onClick={onClick}
+    >
+      <div className={classes.planHeader}>
+        <div className={classes.planIcon}>
+          {getPlanIcon(index)}
+        </div>
+        <div className={classes.planName}>{plan.name}</div>
+        <div className={classes.planDescription}>
+          {getPlanDescription(plan)}
+        </div>
+        <div className={classes.planPricing}>
+          <span className={classes.planPriceCurrency}>R$</span>
+          <span className={classes.planPrice}>
+            {Math.floor(plan.value)}
+          </span>
+          <span className={classes.planPeriod}>/mês</span>
+        </div>
+      </div>
+      
+      <div className={classes.planFeatures}>
+        <div className="feature">
+          {getFeatureIcon('connections')}
+          {plan.connections} Conexões WhatsApp
+        </div>
+        <div className="feature">
+          {getFeatureIcon('users')}
+          {plan.users} Usuários
+        </div>
+        <div className="feature">
+          {getFeatureIcon('campaigns')}
+          Campanhas {plan.useCampaigns ? "ilimitadas" : "não incluídas"}
+        </div>
+        <div className="feature">
+          {getFeatureIcon('schedules')}
+          Agendamentos {plan.useSchedules ? "incluídos" : "não incluídos"}
+        </div>
+        <div className="feature">
+          {getFeatureIcon('chat')}
+          Chat interno {plan.useInternalChat ? "ativo" : "não incluído"}
+        </div>
+        <div className="feature">
+          {getFeatureIcon('api')}
+          API externa {plan.useExternalApi ? "liberada" : "não incluída"}
+        </div>
+      </div>
 
-				<div className={classes.formContainer}>
-					<Stepper activeStep={activeStep} className={classes.stepper}>
-						{steps.map((label, index) => (
-							<Step key={label}>
-								<StepLabel
-									StepIconProps={{
-										style: {
-											color: activeStep === index ? theme.palette.primary.main : theme.palette.text.disabled
-										}
-									}}
-									className={classes.stepLabel}
-								>
-									{label}
-								</StepLabel>
-							</Step>
-						))}
-					</Stepper>
+      <div className={classes.planCta}>
+        <Button
+          className={`${classes.planButton} ${
+            isSelected ? classes.planButtonPrimary : classes.planButtonSecondary
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+        >
+          {isSelected ? "✓ Plano selecionado" : "Selecionar este plano"}
+        </Button>
+      </div>
+    </div>
+  );
 
-					<div className={classes.stepContent}>
-						{activeStep === 0 ? (
-							<Fade in={activeStep === 0} timeout={500}>
-								<Grid container spacing={3} justifyContent="center">
-									{plans.map((plan) => (
-										<Grid item xs={12} sm={6} md={4} key={plan.id}>
-											<Card
-												className={`${classes.pricingCard} ${selectedPlan?.id === plan.id ? classes.pricingCardSelected : ''
-													}`}
-												onClick={() => handlePlanSelect(plan)}
-											>
-												{popularPlan?.id === plan.id && (
-													<div className={classes.popularBadge}>
-														<Star fontSize="small" /> POPULAR
-													</div>
-												)}
-												<CardHeader
-													title={plan.name}
-													titleTypographyProps={{
-														align: 'center',
-														className: classes.pricingCardTitle,
-														variant: 'h6',
-													}}
-													className={classes.pricingCardHeader}
-												/>
+  return (
+    <div className={classes.root}>
+      <div className={`${classes.floatingShape} ${classes.shape1}`}></div>
+      <div className={`${classes.floatingShape} ${classes.shape2}`}></div>
+      
+      <div className={classes.signUpContainer}>
+        <div className={classes.logoContainer}>
+          <div className={classes.logoIcon}>
+            <MessageIcon />
+          </div>
+          <h1 className={classes.brandName}>
+            <span>Delfin</span>Zap
+          </h1>
+          <p className={classes.brandSubtitle}>
+            Plataforma de múltiplos atendimentos
+          </p>
+        </div>
 
-												<CardContent>
-													<div className={classes.pricingCardPrice}>
-														<Typography
-															component="h2"
-															variant="h3"
-															className={classes.pricingCardPriceAmount}
-														>
-															R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-														</Typography>
-														<Typography variant="body1" color="textSecondary">
-															/mês
-														</Typography>
-													</div>
-													<div className={classes.pricingCardFeatures}>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																<strong>{plan.connections}</strong> Conexões WhatsApp
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																<strong>{plan.users}</strong> Usuários
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Campanhas <strong>{plan.useCampaigns ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Agendamentos <strong>{plan.useSchedules ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Chat Interno <strong>{plan.useInternalChat ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																API Extern <strong>{plan.useExternalApi ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Kanban <strong>{plan.useKanban ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Open AI (chatGPT) <strong>{plan.useOpenAi ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																Integrações <strong>{plan.useIntegrations ? 'Sim' : 'Não'}</strong>
-															</Typography>
-														</div>
-														<div className={classes.pricingCardFeature}>
-															<CheckCircle className={classes.featureIcon} />
-															<Typography variant="body2">
-																<strong>{trial} dias</strong> grátis
-															</Typography>
-														</div>
-													</div>
-												</CardContent>
+        <div className={classes.signUpCard}>
+          <div style={{ textAlign: 'center' }}>
+            <div className={classes.trialBadge}>
+              <Star /> {trial} dias grátis para testar
+            </div>
+          </div>
 
-												<CardActions>
-													<Button
-														fullWidth
-														variant={selectedPlan?.id === plan.id ? "contained" : "outlined"}
-														color="primary"
-														size="large"
-														style={{
-															margin: theme.spacing(0, 2, 2),
-															borderRadius: 12,
-															textTransform: 'none',
-															fontWeight: 600,
-															padding: theme.spacing(1.5),
-															fontSize: '1rem',
-														}}
-													>
-														{selectedPlan?.id === plan.id ? 'Selecionado' : 'Selecionar'}
-													</Button>
-												</CardActions>
-											</Card>
-										</Grid>
-									))}
-								</Grid>
-							</Fade>
-						) : (
-							<Slide direction="left" in={activeStep === 1} mountOnEnter unmountOnExit>
-								<Paper elevation={0} className={classes.paper}>
-									<Button
-										startIcon={<ArrowBack />}
-										onClick={handleBack}
-										className={classes.backButton}
-										style={{ textTransform: 'none' }}
-									>
-										Voltar para planos
-									</Button>
+          <Typography className={classes.formTitle}>
+            {activeStep === 0 ? "Escolha o plano perfeito para você" : "Complete seu cadastro"}
+          </Typography>
+          <Typography className={classes.formSubtitle}>
+            {activeStep === 0 ? (
+              "Todos os planos incluem suporte completo e podem ser alterados a qualquer momento. Sem compromisso!"
+            ) : (
+              <>
+                Já tem uma conta?{" "}
+                <Link component={RouterLink} to="/login">
+                  Faça login aqui
+                </Link>
+              </>
+            )}
+          </Typography>
 
-									{selectedPlan && (
-										<div className={classes.planSummary}>
-											<Typography variant="body1">
-												Plano selecionado: <span className={classes.planName}>{selectedPlan.name}</span>
-											</Typography>
-											<Typography variant="body1" fontWeight="600">
-												R$ {selectedPlan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
-											</Typography>
-										</div>
-									)}
+          <Stepper activeStep={activeStep} className={classes.stepper}>
+            {steps.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-									<Avatar className={classes.avatar}>
-										<LockOutlined style={{ fontSize: 30 }} />
-									</Avatar>
-									<Typography component="h1" variant="h5" className={classes.title}>
-										Cadastre sua empresa
-									</Typography>
+          {activeStep === 0 ? (
+            <Fade in={activeStep === 0} timeout={500}>
+              <div>
+                <Button
+                  component={RouterLink}
+                  to="/login"
+                  startIcon={<ArrowBack />}
+                  className={classes.backToLoginButton}
+                >
+                  Voltar ao login
+                </Button>
+                
+                <Grid container spacing={2} className={classes.plansGrid}>
+                  {plans.map((plan, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={plan.id}>
+                      <PlanCard
+                        plan={plan}
+                        isSelected={selectedPlan?.id === plan.id}
+                        onClick={() => setSelectedPlan(plan)}
+                        index={index}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+                <Button
+                  onClick={handleNext}
+                  disabled={!selectedPlan}
+                  className={classes.submitButton}
+                  startIcon={<ArrowForward />}
+                >
+                  Continuar com o plano {selectedPlan?.name || "selecionado"}
+                </Button>
+              </div>
+            </Fade>
+          ) : (
+            <Slide
+              direction="left"
+              in={activeStep === 1}
+              mountOnEnter
+              unmountOnExit
+            >
+              <div>
+                <Button
+                  startIcon={<ArrowBack />}
+                  onClick={handleBack}
+                  className={classes.backButton}
+                >
+                  Voltar para os planos
+                </Button>
 
-									<Formik
-										initialValues={initialState}
-										enableReinitialize={true}
-										validationSchema={UserSchema}
-										onSubmit={(values, actions) => {
-											setTimeout(() => {
-												handleSignUp(values);
-												actions.setSubmitting(false);
-											}, 400);
-										}}
-									>
-										{({ touched, errors, isSubmitting, values }) => (
-											<Form className={classes.form}>
-												<Grid container spacing={3}>
-													<Grid item xs={12}>
-														<Field
-															as={TextField}
-															autoComplete="name"
-															name="name"
-															error={touched.name && Boolean(errors.name)}
-															helperText={touched.name && errors.name}
-															variant="outlined"
-															fullWidth
-															id="name"
-															label="Nome da Empresa"
-															placeholder="Digite o nome da sua empresa"
-															className={classes.inputField}
-															InputProps={{
-																startAdornment: (
-																	<Business color="action" style={{ marginRight: 12 }} />
-																),
-															}}
-														/>
-													</Grid>
+                {selectedPlan && (
+                  <div className={classes.selectedPlanAlert}>
+                    <div className="icon">
+                      <CheckCircle />
+                    </div>
+                    <div className="content">
+                      <div className="title">
+                        Plano {selectedPlan.name} selecionado
+                      </div>
+                      <div className="subtitle">
+                        R$ {selectedPlan.value.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}/mês após o período de teste
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-													<Grid item xs={12}>
-														<Field
-															as={TextField}
-															variant="outlined"
-															fullWidth
-															id="email"
-															label="Email"
-															name="email"
-															error={touched.email && Boolean(errors.email)}
-															helperText={touched.email && errors.email}
-															autoComplete="email"
-															placeholder="seu@email.com"
-															required
-															className={classes.inputField}
-															InputProps={{
-																startAdornment: (
-																	<Email color="action" style={{ marginRight: 12 }} />
-																),
-															}}
-														/>
-													</Grid>
+                <Formik
+                  initialValues={{
+                    ...initialState,
+                    planId: selectedPlan?.id || "",
+                  }}
+                  enableReinitialize={true}
+                  validationSchema={UserSchema}
+                  onSubmit={(values, actions) => {
+                    handleSignUp(values);
+                    actions.setSubmitting(false);
+                  }}
+                >
+                  {({
+                    touched,
+                    errors,
+                    isSubmitting,
+                    values,
+                    setFieldValue,
+                  }) => (
+                    <Form className={classes.form}>
+                      <div>
+                        <label className={classes.inputLabel}>
+                          Nome da empresa
+                        </label>
+                        <Field
+                          as={TextField}
+                          name="name"
+                          error={touched.name && Boolean(errors.name)}
+                          helperText={touched.name && errors.name}
+                          variant="outlined"
+                          fullWidth
+                          className={classes.inputField}
+                          placeholder="Digite o nome da sua empresa"
+                        />
+                      </div>
 
-													<Grid item xs={12}>
-														<Field name="phone">
-															{({ field, form }) => (
-																<InputMask
-																	mask="(99) 99999-9999"
-																	value={field.value}
-																	onChange={field.onChange}
-																	onBlur={field.onBlur}
-																>
-																	{() => (
-																		<TextField
-																			variant="outlined"
-																			fullWidth
-																			id="phone"
-																			label="Telefone"
-																			error={touched.phone && Boolean(errors.phone)}
-																			helperText={touched.phone && errors.phone}
-																			placeholder="(00) 00000-0000"
-																			required
-																			className={classes.inputField}
-																			InputProps={{
-																				startAdornment: (
-																					<Phone color="action" style={{ marginRight: 12 }} />
-																				),
-																			}}
-																		/>
-																	)}
-																</InputMask>
-															)}
-														</Field>
-													</Grid>
+                      <div>
+                        <label className={classes.inputLabel}>E-mail corporativo</label>
+                        <Field
+                          as={TextField}
+                          variant="outlined"
+                          fullWidth
+                          name="email"
+                          error={touched.email && Boolean(errors.email)}
+                          helperText={touched.email && errors.email}
+                          autoComplete="email"
+                          className={classes.inputField}
+                          placeholder="empresa@email.com"
+                        />
+                      </div>
 
-													<Grid item xs={12}>
-														<Field
-															as={TextField}
-															variant="outlined"
-															fullWidth
-															name="password"
-															error={touched.password && Boolean(errors.password)}
-															helperText={touched.password && errors.password}
-															label="Senha"
-															type="password"
-															id="password"
-															placeholder="Mínimo 5 caracteres"
-															autoComplete="new-password"
-															required
-															className={classes.inputField}
-															InputProps={{
-																startAdornment: (
-																	<VpnKey color="action" style={{ marginRight: 12 }} />
-																),
-															}}
-														/>
-													</Grid>
-												</Grid>
+                      <div>
+                        <label className={classes.inputLabel}>WhatsApp</label>
+                        <Field name="phone">
+                          {({ field, form }) => (
+                            <InputMask
+                              mask="(99) 99999-9999"
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                            >
+                              {() => (
+                                <TextField
+                                  variant="outlined"
+                                  fullWidth
+                                  error={touched.phone && Boolean(errors.phone)}
+                                  helperText={touched.phone && errors.phone}
+                                  className={classes.inputField}
+                                  placeholder="(00) 00000-0000"
+                                />
+                              )}
+                            </InputMask>
+                          )}
+                        </Field>
+                      </div>
 
-												<Button
-													type="submit"
-													fullWidth
-													variant="contained"
-													color="primary"
-													className={classes.submit}
-													disabled={isSubmitting}
-													size="large"
-												>
-													{isSubmitting ? 'Criando conta...' : `Iniciar teste de ${trial} dias`}
-												</Button>
+                      <div>
+                        <label className={classes.inputLabel}>Crie uma senha</label>
+                        <Field
+                          as={TextField}
+                          variant="outlined"
+                          fullWidth
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          error={touched.password && Boolean(errors.password)}
+                          helperText={touched.password && errors.password}
+                          className={classes.inputField}
+                          placeholder="Mínimo 5 caracteres"
+                          autoComplete="new-password"
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={handleClickShowPassword}
+                                  edge="end"
+                                  size="small"
+                                  className={classes.passwordToggle}
+                                >
+                                  {showPassword ? <Visibility fontSize="small" /> : <VisibilityOff fontSize="small" />}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </div>
 
-												{/*<Typography variant="body2" color="textSecondary" align="center" style={{ marginTop: 16 }}>
-                          Ao se registrar, você concorda com nossos{' '}
-                          <Link href="#" color="primary" fontWeight="600">Termos de Serviço</Link> e{' '}
-                          <Link href="#" color="primary" fontWeight="600">Política de Privacidade</Link>.
-                        </Typography>*/}
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        className={classes.submitButton}
+                        disabled={loading}
+                        startIcon={loading ? null : <FlashOn />}
+                      >
+                        {loading ? (
+                          <CircularProgress size={22} color="inherit" />
+                        ) : (
+                          `Começar teste grátis de ${trial} dias`
+                        )}
+                      </Button>
 
-												<Box mt={3} textAlign="center">
-													<Typography variant="body2">
-														Já tem uma conta?{' '}
-														<Link
-															component={RouterLink}
-															to="/login"
-															color="primary"
-															style={{ fontWeight: '600' }}
-														>
-															Faça login aqui
-														</Link>
-													</Typography>
-												</Box>
-											</Form>
-										)}
-									</Formik>
-								</Paper>
-							</Slide>
-						)}
-					</div>
-				</div>
-			</Container>
+                      <div className={classes.securityInfo}>
+                        <Lock />
+                        Seus dados estão seguros e criptografados
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
+              </div>
+            </Slide>
+          )}
 
-			<Box mt={4} mb={4}>
-				<Copyright />
-			</Box>
-		</div>
-	);
+          <div className={classes.footer}>
+            © 2025 DelfinZap. Todos os direitos reservados.
+            <br />
+            <Link href="#">Termos de uso</Link> • <Link href="#">Política de privacidade</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default SignUp;

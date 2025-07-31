@@ -13,9 +13,21 @@ import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import Tooltip from "@material-ui/core/Tooltip";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import Fade from "@material-ui/core/Fade";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import BlockIcon from "@material-ui/icons/Block";
 
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
@@ -30,8 +42,6 @@ import UserModal from "../../components/UserModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
 import { SocketContext } from "../../context/Socket/SocketContext";
-
-
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
@@ -80,9 +90,225 @@ const reducer = (state, action) => {
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
-    padding: theme.spacing(1),
-    overflowY: "scroll",
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '16px',
+    border: '1px solid rgba(34, 197, 94, 0.1)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.04)',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  tableContainer: {
+    overflowY: 'auto',
+    flex: 1,
     ...theme.scrollbarStyles,
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#f1f5f9',
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: '#cbd5e1',
+      borderRadius: '4px',
+      '&:hover': {
+        background: '#94a3b8',
+      },
+    },
+  },
+  table: {
+    minWidth: 650,
+    '& .MuiTableCell-root': {
+      borderBottom: '1px solid #f1f5f9',
+      padding: theme.spacing(2),
+    },
+  },
+  tableHeader: {
+    backgroundColor: '#f8fafc',
+    '& .MuiTableCell-head': {
+      fontWeight: 600,
+      fontSize: '14px',
+      color: '#475569',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      borderBottom: '2px solid #e2e8f0',
+    },
+  },
+  tableRow: {
+    transition: 'all 0.3s ease',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#f0fdf4',
+      transform: 'scale(1.01)',
+      boxShadow: '0 2px 8px rgba(34, 197, 94, 0.08)',
+    },
+  },
+  searchField: {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      backgroundColor: 'white',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+      '& fieldset': {
+        borderColor: '#e2e8f0',
+        borderWidth: '1px',
+      },
+      '&:hover fieldset': {
+        borderColor: '#cbd5e1',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#22c55e',
+        borderWidth: '2px',
+      },
+      '& input': {
+        padding: '12px 14px',
+        fontSize: '14px',
+      },
+    },
+  },
+  addButton: {
+    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+    color: 'white',
+    borderRadius: '12px',
+    padding: '12px 24px',
+    fontWeight: 600,
+    fontSize: '14px',
+    textTransform: 'none',
+    boxShadow: '0 4px 14px rgba(34, 197, 94, 0.3)',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+      boxShadow: '0 6px 20px rgba(34, 197, 94, 0.4)',
+      transform: 'translateY(-1px)',
+    },
+  },
+  userAvatar: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#f0fdf4',
+    color: '#22c55e',
+    fontWeight: 600,
+    fontSize: '18px',
+    border: '2px solid #dcfce7',
+  },
+  userInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(2),
+  },
+  userName: {
+    fontWeight: 600,
+    fontSize: '15px',
+    color: '#0f172a',
+    marginBottom: '2px',
+  },
+  userEmail: {
+    fontSize: '13px',
+    color: '#64748b',
+  },
+  statusChip: {
+    borderRadius: '8px',
+    fontWeight: 500,
+    fontSize: '12px',
+    height: '28px',
+  },
+  statusOnline: {
+    backgroundColor: '#f0fdf4',
+    color: '#16a34a',
+    border: '1px solid #bbf7d0',
+  },
+  statusOffline: {
+    backgroundColor: '#f1f5f9',
+    color: '#64748b',
+    border: '1px solid #e2e8f0',
+  },
+  profileChip: {
+    borderRadius: '8px',
+    fontWeight: 500,
+    fontSize: '12px',
+    height: '28px',
+    backgroundColor: '#f0f9ff',
+    color: '#0369a1',
+    border: '1px solid #bae6fd',
+  },
+  actionButton: {
+    margin: theme.spacing(0, 0.5),
+    padding: '8px',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      transform: 'scale(1.1)',
+    },
+  },
+  editButton: {
+    color: '#22c55e',
+    backgroundColor: '#f0fdf4',
+    '&:hover': {
+      backgroundColor: '#dcfce7',
+    },
+  },
+  deleteButton: {
+    color: '#ef4444',
+    backgroundColor: '#fef2f2',
+    '&:hover': {
+      backgroundColor: '#fee2e2',
+    },
+  },
+  tableEmpty: {
+    textAlign: 'center',
+    padding: theme.spacing(8),
+    color: '#94a3b8',
+  },
+  idCell: {
+    fontFamily: 'monospace',
+    fontSize: '13px',
+    color: '#94a3b8',
+    backgroundColor: '#f8fafc',
+    borderRadius: '6px',
+    padding: '4px 8px',
+    display: 'inline-block',
+  },
+  loadingBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '3px',
+    zIndex: 1,
+  },
+  statsCard: {
+    display: 'flex',
+    gap: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+    padding: theme.spacing(2),
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '12px',
+    border: '1px solid rgba(34, 197, 94, 0.1)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+  },
+  statItem: {
+    flex: 1,
+    textAlign: 'center',
+    padding: theme.spacing(2),
+    borderRadius: '8px',
+    backgroundColor: '#f8fafc',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      backgroundColor: '#f0fdf4',
+      transform: 'translateY(-2px)',
+    },
+  },
+  statNumber: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: '#0f172a',
+    marginBottom: '4px',
+  },
+  statLabel: {
+    fontSize: '13px',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
   },
 }));
 
@@ -188,6 +414,29 @@ const Users = () => {
     }
   };
 
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getProfileIcon = (profile) => {
+    return profile?.toLowerCase() === 'admin' ? <SupervisorAccountIcon /> : <AccountCircleIcon />;
+  };
+
+  const getUserStats = () => {
+    const totalUsers = users.length;
+    const onlineUsers = users.filter(user => user.online).length;
+    const adminUsers = users.filter(user => user.profile?.toLowerCase() === 'admin').length;
+    
+    return { totalUsers, onlineUsers, adminUsers };
+  };
+
+  const { totalUsers, onlineUsers, adminUsers } = getUserStats();
+
   return (
     <MainContainer>
       <ConfirmationModal
@@ -217,80 +466,152 @@ const Users = () => {
             type="search"
             value={searchParam}
             onChange={handleSearch}
+            className={classes.searchField}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon style={{ color: "gray" }} />
+                  <SearchIcon style={{ color: "#94a3b8", fontSize: 20 }} />
                 </InputAdornment>
               ),
             }}
           />
           <Button
             variant="contained"
-            color="primary"
+            className={classes.addButton}
             onClick={handleOpenUserModal}
+            startIcon={<PersonAddIcon />}
           >
             {i18n.t("users.buttons.add")}
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper
-        className={classes.mainPaper}
-        variant="outlined"
-        onScroll={handleScroll}
-      >
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-			<TableCell align="center">
-                {i18n.t("users.table.id")}
-              </TableCell>
-              <TableCell align="center">{i18n.t("users.table.status")}</TableCell>
-              <TableCell align="center">{i18n.t("users.table.name")}</TableCell>
-              <TableCell align="center">
-                {i18n.t("users.table.email")}
-              </TableCell>
-              <TableCell align="center">
-                {i18n.t("users.table.profile")}
-              </TableCell>
-              <TableCell align="center">
-                {i18n.t("users.table.actions")}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-				  <TableCell align="center">{user.id}</TableCell>
-				  <TableCell align="center"><UserStatusIcon user={user} /></TableCell>
-                  <TableCell align="center">{user.name}</TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">{user.profile}</TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditUser(user)}
-                    >
-                      <EditIcon />
-                    </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingUser(user);
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
+      <Box className={classes.statsCard}>
+        <Box className={classes.statItem}>
+          <Typography className={classes.statNumber}>{totalUsers}</Typography>
+          <Typography className={classes.statLabel}>Total de Usuários</Typography>
+        </Box>
+        <Box className={classes.statItem}>
+          <Typography className={classes.statNumber} style={{ color: '#22c55e' }}>
+            {onlineUsers}
+          </Typography>
+          <Typography className={classes.statLabel}>Online Agora</Typography>
+        </Box>
+        <Box className={classes.statItem}>
+          <Typography className={classes.statNumber} style={{ color: '#3b82f6' }}>
+            {adminUsers}
+          </Typography>
+          <Typography className={classes.statLabel}>Administradores</Typography>
+        </Box>
+      </Box>
+
+      <Paper className={classes.mainPaper} variant="outlined">
+        {loading && pageNumber === 1 && (
+          <LinearProgress className={classes.loadingBar} color="primary" />
+        )}
+        <div className={classes.tableContainer} onScroll={handleScroll}>
+          <Table className={classes.table} stickyHeader>
+            <TableHead>
+              <TableRow className={classes.tableHeader}>
+                <TableCell style={{ width: '80px' }}>{i18n.t("users.table.id")}</TableCell>
+                <TableCell>{i18n.t("users.table.name")}</TableCell>
+                <TableCell align="center" style={{ width: '120px' }}>
+                  {i18n.t("users.table.status")}
+                </TableCell>
+                <TableCell align="center" style={{ width: '140px' }}>
+                  {i18n.t("users.table.profile")}
+                </TableCell>
+                <TableCell align="center" style={{ width: '140px' }}>
+                  {i18n.t("users.table.actions")}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.length === 0 && !loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className={classes.tableEmpty}>
+                    <AccountCircleIcon style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }} />
+                    <Typography variant="h6" style={{ marginBottom: 8 }}>
+                      Nenhum usuário encontrado
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Adicione novos usuários clicando no botão acima
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))}
-              {loading && <TableRowSkeleton columns={4} />}
-            </>
-          </TableBody>
-        </Table>
+              ) : (
+                <>
+                  {users.map((user) => (
+                    <Fade in key={user.id}>
+                      <TableRow className={classes.tableRow}>
+                        <TableCell>
+                          <span className={classes.idCell}>#{user.id}</span>
+                        </TableCell>
+                        <TableCell>
+                          <Box className={classes.userInfo}>
+                            <Avatar className={classes.userAvatar}>
+                              {getInitials(user.name)}
+                            </Avatar>
+                            <Box>
+                              <Typography className={classes.userName}>
+                                {user.name}
+                              </Typography>
+                              <Typography className={classes.userEmail}>
+                                {user.email}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            size="small"
+                            label={user.online ? "Online" : "Offline"}
+                            className={`${classes.statusChip} ${
+                              user.online ? classes.statusOnline : classes.statusOffline
+                            }`}
+                            icon={user.online ? <VerifiedUserIcon /> : <BlockIcon />}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            size="small"
+                            label={user.profile}
+                            className={classes.profileChip}
+                            icon={getProfileIcon(user.profile)}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Tooltip title="Editar usuário">
+                            <IconButton
+                              size="small"
+                              className={`${classes.actionButton} ${classes.editButton}`}
+                              onClick={() => handleEditUser(user)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Excluir usuário">
+                            <IconButton
+                              size="small"
+                              className={`${classes.actionButton} ${classes.deleteButton}`}
+                              onClick={(e) => {
+                                setConfirmModalOpen(true);
+                                setDeletingUser(user);
+                              }}
+                            >
+                              <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    </Fade>
+                  ))}
+                  {loading && <TableRowSkeleton columns={5} />}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </Paper>
     </MainContainer>
   );
